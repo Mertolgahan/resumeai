@@ -12,7 +12,8 @@ create table public.profiles (
   full_name text,
   plan text default 'free' check (plan in ('free', 'pro', 'lifetime')),
   resumes_generated integer default 0,
-  stripe_customer_id text,
+  lemonsqueezy_customer_id text,
+  stripe_customer_id text, -- legacy; kept for backwards compat
   created_at timestamp with time zone default now() not null,
   updated_at timestamp with time zone default now() not null
 );
@@ -29,12 +30,15 @@ create table public.resumes (
   updated_at timestamp with time zone default now() not null
 );
 
--- Subscriptions table (Stripe integration)
+-- Subscriptions table (provider-agnostic: LemonSqueezy primary, Stripe legacy)
 create table public.subscriptions (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references public.profiles(user_id) on delete cascade not null,
-  stripe_subscription_id text unique,
-  stripe_price_id text not null,
+  payment_provider text check (payment_provider in ('lemonsqueezy', 'stripe')),
+  provider_subscription_id text unique,
+  provider_price_id text,
+  stripe_subscription_id text unique,       -- legacy; kept for backwards compat
+  stripe_price_id text,                     -- legacy; kept for backwards compat
   status text default 'active' check (status in ('active', 'canceled', 'past_due', 'trialing')),
   current_period_end timestamp with time zone,
   created_at timestamp with time zone default now() not null,
@@ -43,11 +47,11 @@ create table public.subscriptions (
 
 -- Create indexes
 create index idx_profiles_user_id on public.profiles(user_id);
-create index idx_profiles_stripe_customer_id on public.profiles(stripe_customer_id);
+create index idx_profiles_lemonsqueezy_customer_id on public.profiles(lemonsqueezy_customer_id);
 create index idx_resumes_user_id on public.resumes(user_id);
 create index idx_resumes_created_at on public.resumes(created_at desc);
 create index idx_subscriptions_user_id on public.subscriptions(user_id);
-create index idx_subscriptions_stripe_id on public.subscriptions(stripe_subscription_id);
+create index idx_subscriptions_provider_id on public.subscriptions(provider_subscription_id);
 
 -- Row Level Security
 alter table public.profiles enable row level security;

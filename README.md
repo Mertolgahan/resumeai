@@ -10,12 +10,12 @@ ResumeAI generates professional, ATS-optimized resumes and cover letters using A
 
 | Component | Technology | Cost |
 |-----------|-----------|------|
-| Framework | Next.js 14 (App Router) | $0 |
+| Framework | Next.js 16 (App Router) | $0 |
 | Hosting | Vercel (Hobby tier) | $0 |
 | Database | Supabase (Free tier) | $0 |
 | Auth | Supabase Auth (Free: 50K MAU) | $0 |
-| AI | OpenAI GPT-4o-mini | ~$0.01-0.10/resume |
-| Payments | Stripe | % of sale |
+| AI | OpenAI GPT-4o-mini via OpenRouter | ~$0.01-0.10/resume |
+| Payments | LemonSqueezy | % of sale |
 | Email | Resend (Free: 100/day) | $0 |
 | **Total Month 1** | | **$1/month + API usage** |
 
@@ -23,8 +23,8 @@ ResumeAI generates professional, ATS-optimized resumes and cover letters using A
 
 - Node.js 18+
 - Supabase account (free)
-- OpenAI API key
-- Stripe account (test mode for development)
+- OpenRouter API key
+- LemonSqueezy account (test mode for development)
 
 ## Setup
 
@@ -46,13 +46,13 @@ Fill in your actual values in `.env.local`:
 - `NEXT_PUBLIC_SUPABASE_URL` - From Supabase project settings
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - From Supabase project settings
 - `SUPABASE_SERVICE_ROLE_KEY` - From Supabase project settings (keep secret!)
-- `OPENAI_API_KEY` - From OpenAI dashboard
-- `STRIPE_SECRET_KEY` - From Stripe dashboard
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - From Stripe dashboard
-- `STRIPE_PRO_PRICE_ID` - Create in Stripe
-- `STRIPE_LIFETIME_PRICE_ID` - Create in Stripe
+- `OPENROUTER_API_KEY` - From OpenRouter dashboard
 - `NEXT_PUBLIC_APP_URL` - http://localhost:3000 for dev
-- `STRIPE_WEBHOOK_SECRET` - From Stripe CLI or dashboard
+- `LEMONSQUEEZY_API_KEY` - From LemonSqueezy Settings > API
+- `LEMONSQUEEZY_STORE_ID` - Your LemonSqueezy store ID
+- `LEMONSQUEEZY_PRO_VARIANT_ID` - Create a Pro subscription variant in LemonSqueezy
+- `LEMONSQUEEZY_LIFETIME_VARIANT_ID` - Create a Lifetime product variant in LemonSqueezy
+- `LEMONSQUEEZY_WEBHOOK_SECRET` - From your webhook settings in LemonSqueezy
 
 ### 3. Set up Supabase
 
@@ -61,16 +61,25 @@ Fill in your actual values in `.env.local`:
 3. Go to Authentication > Providers and enable Email and Google OAuth
 4. Copy the project URL and anon key to `.env.local`
 
-### 4. Set up Stripe
+### 4. Set up LemonSqueezy
 
-1. Create products and prices in Stripe:
-   - Pro Monthly: $9/month recurring
-   - Lifetime: $29 one-time
-2. Copy the price IDs to `.env.local`
-3. For local webhook testing, install Stripe CLI:
-   ```bash
-   stripe listen --forward-to localhost:3000/api/stripe/webhook
+1. Create products and variants in LemonSqueezy:
+   - **Pro Monthly** — $9/month recurring
+   - **Lifetime** — $29 one-time
+2. Copy the **variant IDs** (not product IDs) to `.env.local`
+3. Add a webhook in LemonSqueezy pointing to:
    ```
+   https://your-domain.com/api/lemonsqueezy/webhook
+   ```
+   Select these events:
+   - `order_created`
+   - `subscription_created`
+   - `subscription_payment_success`
+   - `subscription_cancelled`
+   - `subscription_expired`
+   - `subscription_paused`
+   - `subscription_resumed`
+4. Copy the webhook signing secret to `.env.local` as `LEMONSQUEEZY_WEBHOOK_SECRET`
 
 ### 5. Run the development server
 
@@ -103,10 +112,9 @@ resumeai/
 │   │   └── api/
 │   │       ├── generate-resume/route.ts
 │   │       ├── generate-cover-letter/route.ts
-│   │       └── stripe/
-│   │           ├── checkout/route.ts
-│   │           ├── webhook/route.ts
-│   │           └── portal/route.ts
+│   │       └── lemonsqueezy/
+│   │           ├── checkout/route.ts   # LemonSqueezy checkout
+│   │           └── webhook/route.ts    # LemonSqueezy webhooks
 │   ├── components/
 │   │   ├── Navbar.tsx
 │   │   ├── Footer.tsx
@@ -116,7 +124,7 @@ resumeai/
 │   │   └── Icons.tsx
 │   ├── lib/
 │   │   ├── openai.ts                  # AI generation logic + types
-│   │   ├── stripe.ts                  # Stripe config + plans
+│   │   ├── lemonsqueezy.ts            # LemonSqueezy config + plans
 │   │   └── supabase.ts                # Supabase client
 │   └── types/
 │       └── index.ts                   # TypeScript types
@@ -133,9 +141,8 @@ resumeai/
 |--------|----------|-------------|
 | POST | `/api/generate-resume` | Generate AI resume from user input |
 | POST | `/api/generate-cover-letter` | Generate AI cover letter |
-| GET | `/api/stripe/checkout?plan=pro\|lifetime` | Create Stripe checkout session |
-| POST | `/api/stripe/webhook` | Handle Stripe webhooks |
-| POST | `/api/stripe/portal` | Create Stripe billing portal session |
+| GET | `/api/lemonsqueezy/checkout?plan=pro\|lifetime` | Create LemonSqueezy checkout session |
+| POST | `/api/lemonsqueezy/webhook` | Handle LemonSqueezy webhooks |
 
 ## Deployment
 
@@ -145,6 +152,7 @@ resumeai/
 2. Import project in Vercel
 3. Set environment variables in Vercel dashboard
 4. Deploy
+5. Update your LemonSqueezy webhook URL to the production domain
 
 ## Revenue Projections
 

@@ -101,7 +101,7 @@ export default function PricingPage() {
                 </li>
               </ul>
               <a
-                href="/api/stripe/checkout?plan=pro"
+                href="/api/lemonsqueezy/checkout?plan=pro"
                 className="mt-8 block w-full rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
               >
                 Start Pro Trial
@@ -140,7 +140,7 @@ export default function PricingPage() {
                 </li>
               </ul>
               <a
-                href="/api/stripe/checkout?plan=lifetime"
+                href="/api/lemonsqueezy/checkout?plan=lifetime"
                 className="mt-8 block w-full rounded-full border border-primary py-2.5 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary/5"
               >
                 Get Lifetime Access

@@ -8,14 +8,14 @@ export async function GET() {
     ),
     supabaseAdmin: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     openrouter: !!process.env.OPENROUTER_API_KEY,
-    stripe: !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
+    lemonsqueezy: !!process.env.LEMONSQUEEZY_API_KEY,
   };
 
   // For this MVP:
   // - Supabase anon key + OpenRouter are required for core features
-  // - Service role key & Stripe are optional for v1
+  // - Service role key & LemonSqueezy are optional for v1
   const criticalOk = services.supabase && services.openrouter;
-  const allOk = criticalOk && services.supabaseAdmin && services.stripe;
+  const allOk = criticalOk && services.supabaseAdmin && services.lemonsqueezy;
 
   return NextResponse.json(
     {

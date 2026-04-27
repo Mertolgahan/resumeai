@@ -7,7 +7,8 @@ export interface UserProfile {
   full_name: string;
   plan: PlanType;
   resumes_generated: number;
-  stripe_customer_id: string | null;
+  lemonsqueezy_customer_id: string | null;
+  payment_customer_id: string | null; // legacy generic field
   created_at: string;
   updated_at: string;
 }

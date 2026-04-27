@@ -9,11 +9,11 @@
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
     "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
     "OPENROUTER_API_KEY": "@openrouter_api_key",
-    "STRIPE_SECRET_KEY": "@stripe_secret_key",
-    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe_publishable_key",
-    "STRIPE_PRO_PRICE_ID": "@stripe_pro_price_id",
-    "STRIPE_LIFETIME_PRICE_ID": "@stripe_lifetime_price_id",
-    "NEXT_PUBLIC_APP_URL": "@app_url",
-    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret"
+    "LEMONSQUEEZY_API_KEY": "@lemonsqueezy_api_key",
+    "LEMONSQUEEZY_STORE_ID": "@lemonsqueezy_store_id",
+    "LEMONSQUEEZY_WEBHOOK_SECRET": "@lemonsqueezy_webhook_secret",
+    "LEMONSQUEEZY_PRO_VARIANT_ID": "@lemonsqueezy_pro_variant_id",
+    "LEMONSQUEEZY_LIFETIME_VARIANT_ID": "@lemonsqueezy_lifetime_variant_id",
+    "NEXT_PUBLIC_APP_URL": "@app_url"
   }
 }
