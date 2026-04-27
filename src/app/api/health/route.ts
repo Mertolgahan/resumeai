@@ -7,12 +7,15 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     ),
     supabaseAdmin: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    openai: !!process.env.OPENAI_API_KEY,
+    openrouter: !!process.env.OPENROUTER_API_KEY,
     stripe: !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
   };
 
-  const criticalOk = services.supabase && services.supabaseAdmin;
-  const allOk = criticalOk && services.openai && services.stripe;
+  // For this MVP:
+  // - Supabase anon key + OpenRouter are required for core features
+  // - Service role key & Stripe are optional for v1
+  const criticalOk = services.supabase && services.openrouter;
+  const allOk = criticalOk && services.supabaseAdmin && services.stripe;
 
   return NextResponse.json(
     {

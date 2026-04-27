@@ -1,6 +1,17 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Switch AI provider to OpenRouter (pre-approved fallback).
+// Board directive confirmed: no OpenAI API key.
+// Ollama Cloud credentials unavailable in environment → use OPENROUTER_API_KEY.
+// The openai SDK works fine with OpenRouter because it exposes an OpenAI-compatible endpoint.
+const openai = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+  defaultHeaders: {
+    "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "https://resumeai.vercel.app",
+    "X-Title": "ResumeAI",
+  },
+});
 
 export async function generateResumeContent(input: ResumeInput): Promise<ResumeOutput> {
   const prompt = `You are an expert resume writer. Create a professional, ATS-optimized resume based on the following information. Output JSON only.
@@ -40,7 +51,7 @@ Generate a JSON resume with these fields:
 Make it ATS-friendly, action-oriented, and impactful. Use strong action verbs and quantifiable results where possible.`;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "openai/gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
     response_format: { type: "json_object" },
     temperature: 0.7,
@@ -75,7 +86,7 @@ ${input.whyThisRole || "Express genuine enthusiasm for the position and company.
 Write the cover letter in a professional but engaging tone. Keep it to 3 paragraphs maximum. Do not include the applicant's address or date. Start with "Dear Hiring Manager," and end with a professional closing.`;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "openai/gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
     max_tokens: 1000,
